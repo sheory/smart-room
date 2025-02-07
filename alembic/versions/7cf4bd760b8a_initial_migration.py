@@ -20,7 +20,7 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.create_table(
         "users",
-        Column("id", INTEGER, primary_key=True),
+        Column("id", INTEGER, primary_key=True, autoincrement=True),
         Column("username", VARCHAR(50), nullable=False),
         Column("hashed_password", VARCHAR(200)),
     )

@@ -1,14 +1,16 @@
-from sqlalchemy import String
+from datetime import datetime
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
-from smart_room.app.models import Base
+from app.models import Base
 
 
-class Room(Base):
-    __tablename__ = "room"
+class Reservation(Base):
+    __tablename__ = "reservation"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(30))
-    capacity: Mapped[int]
-    localtion: Mapped[str] = mapped_column(String(30))
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_name: Mapped[str] = mapped_column(String(30))
+    start_time: Mapped[datetime]
+    end_time: Mapped[datetime]
+    room_id: Mapped[int] = mapped_column(ForeignKey("room.id", ondelete="CASCADE"))

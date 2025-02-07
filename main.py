@@ -3,7 +3,7 @@ from app.config.settings import settings
 from app.schemas.health_check import HealthCheck
 from app.api.auth import auth_router
 from app.api.rooms import room_router
-
+from app.api.reservations import reservation_router
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -21,4 +21,5 @@ async def health_check():
 
 
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
-app.include_router(room_router, prefix="/rooms", tags=["rooms"])
+app.include_router(room_router, prefix="/rooms", tags=["Rooms"])
+app.include_router(reservation_router, prefix="/reservations", tags=["Reservations"])
