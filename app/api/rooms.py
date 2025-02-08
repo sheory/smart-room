@@ -4,7 +4,7 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 from app.db.settings import get_db
 from app.schemas.reservations import ReservationGetAllResponse
-from app.schemas.rooms import RoomCheckAvailabilityRequest, RoomCreateRequest, RoomGetAllResponse, RoomGetResponse
+from app.schemas.rooms import RoomCheckAvailabilityRequest, RoomCreateRequest, RoomCreateResponse, RoomGetAllResponse
 from app.services.room_service import check_availability, create_room, get_reservations, get_rooms
 
 
@@ -15,7 +15,7 @@ room_router = APIRouter()
     "/",
     description="Create a room"
 )
-async def create(room_data: RoomCreateRequest, db: Session = Depends(get_db)) -> RoomGetResponse:
+async def create(room_data: RoomCreateRequest, db: Session = Depends(get_db)) -> RoomCreateResponse:
     response = await create_room(room_data, db)
 
     return response

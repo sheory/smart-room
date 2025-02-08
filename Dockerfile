@@ -1,20 +1,18 @@
-# Usando a imagem oficial do Python
 FROM python:3.11
 
-# Definindo o diretório de trabalho
 WORKDIR /app
 
-# Copiando dependências primeiro para otimizar cache
+RUN apt-get update && apt-get install -y netcat-openbsd && rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt .
 
-# Instalando dependências
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiando o código para o contêiner
 COPY . .
 
-# Expondo a porta do FastAPI
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 8000
 
-# Comando para rodar a API
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+ENTRYPOINT ["/entrypoint.sh"]

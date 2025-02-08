@@ -1,7 +1,7 @@
 from sqlalchemy import and_, or_
 from app.models.reservation import Reservation
 from app.schemas.reservations import ReservationGetAllResponse
-from app.schemas.rooms import RoomCheckAvailabilityRequest, RoomCreateRequest, RoomGetResponse, RoomGetAllResponse
+from app.schemas.rooms import RoomCheckAvailabilityRequest, RoomCreateRequest, RoomCreateResponse, RoomGetAllResponse
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from app.db.settings import get_db
@@ -9,7 +9,7 @@ from app.models.room import Room as RoomModel
 from app.core.logger import logger
 
 
-async def create_room(room_data: RoomCreateRequest, db: Session = Depends(get_db)) -> RoomGetResponse:
+async def create_room(room_data: RoomCreateRequest, db: Session = Depends(get_db)) -> RoomCreateResponse:
     new_room = RoomModel(**room_data.model_dump())
 
     db.add(new_room)
@@ -18,7 +18,7 @@ async def create_room(room_data: RoomCreateRequest, db: Session = Depends(get_db
 
     logger.info(f"room {new_room.name} created successfully.")
 
-    return RoomGetResponse(**new_room.__dict__)
+    return RoomCreateResponse(**new_room.__dict__)
 
 
 async def get_rooms(limit: int, offset: int, db: Session = Depends(get_db)) -> RoomGetAllResponse:
@@ -34,7 +34,12 @@ async def get_rooms(limit: int, offset: int, db: Session = Depends(get_db)) -> R
 
 
 async def get_reservations(room_id: int, limit: int, offset: int, db: Session = Depends(get_db)) -> ReservationGetAllResponse:
-    all_reservations: RoomModel = db.query(Reservation).join(RoomModel, Reservation.room_id == room_id).offset(offset).limit(limit)
+    all_reservations: RoomModel = (
+        db.query(Reservation)
+        .join(RoomModel, Reservation.room_id == room_id)
+        .offset(offset)
+        .limit(limit)
+    )
 
     reservations = []
     for reservation in all_reservations:
@@ -65,10 +70,6 @@ async def check_availability(params: RoomCheckAvailabilityRequest, db: Session =
 
     if any_room: # TODO- generalizar
         logger.error("Room already reserved at this date and time.") #TODO - criar constantes p log
-        return False
-
-    if not any_room.capacity:
-        logger.info("Room is already full")
         return False
 
     logger.info(f"room {params.id} available.")

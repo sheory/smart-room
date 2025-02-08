@@ -21,6 +21,10 @@ class RoomCreateRequest(Room):
     ...
 
 
+class RoomCreateResponse(RoomGetResponse):
+    ...
+
+
 class RoomCheckAvailabilityRequest(BaseModel):
     id: int
     start_time: datetime
