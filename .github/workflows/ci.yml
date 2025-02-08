@@ -5,7 +5,6 @@ on:
     branches:
       - master
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,11 +22,12 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install pytest-cov
 
     - name: Run database migrations
       run: |
         alembic upgrade head
 
-    - name: Run tests
+    - name: Run tests with coverage
       run: |
-        pytest tests/
+        pytest --cov=app --cov-fail-under=95 tests/
