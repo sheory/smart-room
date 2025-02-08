@@ -21,9 +21,16 @@ jobs:
         echo "DB_PASSWORD=your_db_password" >> .env
         echo "DB_NAME=your_db_name" >> .env
 
-
     - name: Start containers
       run: docker compose -f "docker-compose.yml" up -d --build
+
+    - name: Run migrations
+      run: |
+        docker-compose exec app alembic upgrade head
+
+    - name: Run tests with coverage
+      run: |
+        docker-compose exec app pytest --cov=app --cov-fail-under=95 tests/
 
     - name: Stop containers
       if: always()
