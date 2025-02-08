@@ -26,11 +26,11 @@ jobs:
 
     - name: Run migrations
       run: |
-        docker-compose exec app alembic upgrade head
+        docker exec app alembic upgrade head
 
     - name: Run tests with coverage
       run: |
-        docker-compose exec app pytest --cov=app --cov-fail-under=95 tests/
+        docker exec app pytest --cov=app --cov-fail-under=95 tests/
 
     - name: Stop containers
       if: always()
