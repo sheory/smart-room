@@ -30,7 +30,7 @@ jobs:
         echo "POSTGRES_USER=your_user" >> $GITHUB_ENV
         echo "POSTGRES_PASSWORD=your_password" >> $GITHUB_ENV
         echo "DB_HOST=your_db_host" >> $GITHUB_ENV
-        echo "DB_PORT=your_db_port" >> $GITHUB_ENV
+        echo "DB_PORT=5432" >> $GITHUB_ENV
 
     - name: Run database migrations
       run: |
