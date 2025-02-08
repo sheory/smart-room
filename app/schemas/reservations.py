@@ -1,5 +1,6 @@
-from datetime import  date, datetime
+from datetime import date, datetime
 from typing import List, Optional
+
 from pydantic import BaseModel
 
 
@@ -12,14 +13,12 @@ class RerservationCreateRequest(BaseModel):
 
 class RerservationCreateResponse(RerservationCreateRequest):
     id: int
-    ...
-
 
 
 class RoomGetReservationsRequest(BaseModel):
-    room_id: str
+    room_id: int
     date: Optional[date]
 
 
 class ReservationGetAllResponse(BaseModel):
-    reservations: List[RerservationCreateRequest]
+    reservations: List[RerservationCreateResponse]

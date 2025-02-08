@@ -1,5 +1,6 @@
-from datetime import  date, datetime
+from datetime import date, datetime
 from typing import List, Optional
+
 from pydantic import BaseModel
 
 
@@ -17,12 +18,10 @@ class RoomGetAllResponse(BaseModel):
     rooms: List[RoomGetResponse]
 
 
-class RoomCreateRequest(Room):
-    ...
+class RoomCreateRequest(Room): ...
 
 
-class RoomCreateResponse(RoomGetResponse):
-    ...
+class RoomCreateResponse(RoomGetResponse): ...
 
 
 class RoomCheckAvailabilityRequest(BaseModel):
@@ -31,9 +30,7 @@ class RoomCheckAvailabilityRequest(BaseModel):
     end_time: datetime
 
 
-class RoomBookRequest(RoomCheckAvailabilityRequest):
-    ...
-
+class RoomBookRequest(RoomCheckAvailabilityRequest): ...
 
 
 class RoomGetReservationsRequest(BaseModel):

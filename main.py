@@ -1,9 +1,10 @@
 from fastapi import FastAPI
+
+from app.api.auth import auth_router
+from app.api.reservations import reservation_router
+from app.api.rooms import room_router
 from app.config.settings import settings
 from app.schemas.health_check import HealthCheck
-from app.api.auth import auth_router
-from app.api.rooms import room_router
-from app.api.reservations import reservation_router
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -12,11 +13,13 @@ app = FastAPI(
 )
 
 app.get("/health", response_model=HealthCheck, tags=["status"])
+
+
 async def health_check():
     return HealthCheck(
         name=settings.PROJECT_NAME,
         version=settings.VERSION,
-        description=settings.DESCRIPTION
+        description=settings.DESCRIPTION,
     )
 
 

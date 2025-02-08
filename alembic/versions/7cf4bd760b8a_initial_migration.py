@@ -1,17 +1,18 @@
-""" Create users table
+"""Create users table
 
 Revision ID: 7cf4bd760b8a
-Revises: 
+Revises:
 Create Date: 2025-02-06 00:35:42.180126
 
 """
+
 from typing import Sequence, Union
 
-from alembic import op
 from sqlalchemy import INTEGER, VARCHAR, Column
 
+from alembic import op
 
-revision: str = '7cf4bd760b8a'
+revision: str = "7cf4bd760b8a"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

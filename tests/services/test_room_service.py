@@ -1,28 +1,39 @@
 from datetime import datetime
+from unittest.mock import MagicMock
+
+import pytest
+
 from app.models.reservation import Reservation
 from app.models.room import Room
 from app.schemas.reservations import ReservationGetAllResponse
-from app.schemas.rooms import RoomCheckAvailabilityRequest, RoomCreateRequest, RoomCreateResponse, RoomGetAllResponse
-from app.services.room_service import check_availability, create_room, get_reservations, get_rooms
-import pytest
-from unittest.mock import MagicMock
+from app.schemas.rooms import (
+    RoomCheckAvailabilityRequest,
+    RoomCreateRequest,
+    RoomCreateResponse,
+    RoomGetAllResponse,
+)
+from app.services.room_service import (
+    check_availability,
+    create_room,
+    get_reservations,
+    get_rooms,
+)
 
+# @pytest.mark.asyncio
+# async def test_create_room():
+#     mock_db = MagicMock()
 
-"""@pytest.mark.asyncio
-async def test_create_room():
-    mock_db = MagicMock()
+#     room_data = RoomCreateRequest(name="Room 1", capacity=10, location="Andar 1")
+#     response = await create_room(room_data, mock_db)
 
-    room_data = RoomCreateRequest(name="Room 1", capacity=10, location="Andar 1")
-    response = await create_room(room_data, mock_db)
+#     assert isinstance(response, RoomCreateResponse)
+#     assert response.name == "Room 1"
+#     assert response.capacity == 10
 
-    assert isinstance(response, RoomCreateResponse)
-    assert response.name == "Room 1"
-    assert response.capacity == 10
+#     mock_db.add.assert_called_once()
+#     mock_db.commit.assert_called_once()
+#     mock_db.refresh.assert_called_once()
 
-    mock_db.add.assert_called_once()
-    mock_db.commit.assert_called_once()
-    mock_db.refresh.assert_called_once()
-"""
 
 @pytest.mark.asyncio
 async def test_get_rooms():
@@ -30,10 +41,12 @@ async def test_get_rooms():
 
     mock_rooms = [
         Room(id=1, name="Room 1", capacity=10, location="Andar 1"),
-        Room(id=2, name="Room 2", capacity=15, location="Andar 2")
+        Room(id=2, name="Room 2", capacity=15, location="Andar 2"),
     ]
 
-    mock_db.query.return_value.offset.return_value.limit.return_value.all.return_value = mock_rooms
+    mock_db.query.return_value.offset.return_value.limit.return_value.all.return_value = (
+        mock_rooms
+    )
 
     limit = 2
     offset = 0
@@ -53,11 +66,25 @@ async def test_get_reservations():
     mock_db = MagicMock()
 
     mock_reservations = [
-        Reservation(id=1, room_id=1, user_name="name 1", start_time="2025-02-01T00:00:00", end_time="2025-02-01T01:00:00"),
-        Reservation(id=2, room_id=1, user_name="name 2", start_time="2025-02-02T00:00:00", end_time="2025-02-02T01:00:00")
+        Reservation(
+            id=1,
+            room_id=1,
+            user_name="name 1",
+            start_time="2025-02-01T00:00:00",
+            end_time="2025-02-01T01:00:00",
+        ),
+        Reservation(
+            id=2,
+            room_id=1,
+            user_name="name 2",
+            start_time="2025-02-02T00:00:00",
+            end_time="2025-02-02T01:00:00",
+        ),
     ]
 
-    mock_db.query.return_value.join.return_value.offset.return_value.limit.return_value = mock_reservations
+    mock_db.query.return_value.join.return_value.offset.return_value.limit.return_value = (
+        mock_reservations
+    )
 
     room_id = 1
     limit = 2
@@ -79,29 +106,31 @@ async def test_get_reservations():
             RoomCheckAvailabilityRequest(
                 id=1,
                 start_time=datetime(2025, 2, 1, 10, 0),
-                end_time=datetime(2025, 2, 1, 12, 0)
+                end_time=datetime(2025, 2, 1, 12, 0),
             ),
             [
                 Room(id=1, name="Room 1", capacity=10, location="Andar 1"),
             ],
-            False
+            False,
         ),
         (
             RoomCheckAvailabilityRequest(
                 id=1,
                 start_time=datetime(2025, 2, 1, 13, 0),
-                end_time=datetime(2025, 2, 1, 15, 0)
+                end_time=datetime(2025, 2, 1, 15, 0),
             ),
             [],
-            True
+            True,
         ),
-    ]
+    ],
 )
 @pytest.mark.asyncio
 async def test_check_availability(params, mock_reservations, expected_result):
     mock_db = MagicMock()
 
-    mock_db.query.return_value.join.return_value.filter.return_value.first.return_value = mock_reservations[0] if mock_reservations else None
+    mock_db.query.return_value.join.return_value.filter.return_value.first.return_value = (
+        mock_reservations[0] if mock_reservations else None
+    )
 
     response = await check_availability(params, mock_db)
 
