@@ -5,7 +5,7 @@
 1. [Description](#description)
 2. [Features](#features)
     - [Auth](#auth)
-    - [Rooms](#rooms)
+    - [📄 Rooms](#rooms)
     - [Reservations](#reservations)
 3. [Installation](#installation)
     - [Clone the Repository](#clone-the-repository)
@@ -13,8 +13,12 @@
     - [Setup with Docker Compose](#setup-with-docker-compose)
 4. [API Documentation](#api-documentation)
 5. [Running Tests](#running-tests)
-6. [Extra Features Implemented](#extra-features-implemented)
-7. [Database Migrations with Alembic](#database-migrations-with-alembic)
+6. [CI/CD with GitHub Actions](#ci-cd-with-github-actions)
+7. [Architecture and Database](#architecture-and-database)
+    - [Architecture: Monolithic](#architecture-monolithic)
+    - [Database: PostgreSQL](#database-postgresql)
+8. [Database Migrations with Alembic](#database-migrations-with-alembic)
+9. [Extra Features Implemented](#extra-features-implemented)
 
 ---
 
@@ -42,8 +46,8 @@ It ensures that no conflicts occur when reserving the same room at overlapping t
 ### Rooms
 
 - **POST /rooms/** - Create a new meeting room.
-- **GET /rooms/** - Get a list of all available meeting rooms.
-- **GET /rooms/{room_id}/reservations** - Get all reservations for a specific room.
+- **GET /rooms/** - Get a list of all available meeting rooms (📄 supports pagination).
+- **GET /rooms/{room_id}/reservations** - Get all reservations for a specific room (📄 supports pagination).
 - **GET /rooms/{id}/availability** - Check the availability of a specific room within a time range.
 
 ---
@@ -125,6 +129,18 @@ This project is integrated with **GitHub Actions** for continuous integration an
   - `flake8` (code style checks).
 
 These steps ensure that your code is always correctly formatted, linted, and well-tested before being merged or deployed.
+
+
+## Architecture and Database
+
+### Architecture: Monolithic
+
+The application follows a **monolithic** architecture, meaning that all components are part of a single codebase. <br> This approach was chosen for simplicity and faster development, as the project doesn't require complex distributed systems or microservices at this stage.
+
+### Database: PostgreSQL
+
+The project uses **PostgreSQL** as the database.  <br>PostgreSQL was selected due to its reliability, powerful features (such as ACID compliance and support for complex queries), and its ability to scale as the application grows.
+
 
 ## Database Migrations with Alembic
 
