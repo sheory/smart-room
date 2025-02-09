@@ -25,8 +25,8 @@ jobs:
     - name: Start containers
       run: docker compose -f "docker-compose.yml" up -d --build
 
-    - name: get envs
-      run: docker exec -it fastapi_app env | grep POSTGRES
+    - name: Debug environment variables
+      run: docker exec fastapi_app env
 
     - name: Run migrations
       run: |
