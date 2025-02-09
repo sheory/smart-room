@@ -21,10 +21,7 @@ reservation_router = APIRouter()
 async def make_room_reservation(
     reservation_data: RerservationCreateRequest, db: Session = Depends(get_db)
 ) -> Union[RerservationCreateResponse, Dict[str, str]]:
-    valid_reservation = is_reservation_valid(
-        reservation_data=reservation_data,
-        db=db
-    )
+    valid_reservation = is_reservation_valid(reservation_data=reservation_data, db=db)
     if not valid_reservation:
         return {"error": "Not a valid reservation"}
 
@@ -33,10 +30,7 @@ async def make_room_reservation(
     return response
 
 
-@reservation_router.delete(
-    "/{reservation_id}",
-    description="Cancel a room book"
-)
+@reservation_router.delete("/{reservation_id}", description="Cancel a room book")
 async def cancel_room_reservation(
     reservation_id: int, db: Session = Depends(get_db)
 ) -> Dict[str, str]:

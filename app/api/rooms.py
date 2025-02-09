@@ -41,10 +41,7 @@ async def get_all(
     return response
 
 
-@room_router.get(
-    "/{room_id}/reservations",
-    description="Get room reservations"
-)
+@room_router.get("/{room_id}/reservations", description="Get room reservations")
 async def get_room_reservations(
     room_id: int,
     limit: int = Query(10, ge=1),

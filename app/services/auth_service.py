@@ -13,9 +13,7 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="User already exists")
 
     new_user = User(
-        username=user_data.username, hashed_password=hash_password(
-            user_data.password
-        )
+        username=user_data.username, hashed_password=hash_password(user_data.password)
     )
     db.add(new_user)
     db.commit()
@@ -28,10 +26,7 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
 
 def login_user(user_data: UserCreate, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == user_data.username).first()
-    if not user or not verify_password(
-        user_data.password,
-        user.hashed_password
-    ):
+    if not user or not verify_password(user_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
     token = create_access_token({"sub": user.username})

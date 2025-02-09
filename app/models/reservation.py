@@ -13,6 +13,4 @@ class Reservation(Base):
     user_name: Mapped[str] = mapped_column(String(30))
     start_time: Mapped[datetime]
     end_time: Mapped[datetime]
-    room_id: Mapped[int] = mapped_column(
-        ForeignKey("room.id", ondelete="CASCADE")
-    )
+    room_id: Mapped[int] = mapped_column(ForeignKey("room.id", ondelete="CASCADE"))

@@ -32,12 +32,7 @@ async def create_room(
 async def get_rooms(
     limit: int, offset: int, db: Session = Depends(get_db)
 ) -> RoomGetAllResponse:
-    all_rooms: RoomModel = (
-        db.query(RoomModel)
-        .offset(offset)
-        .limit(limit)
-        .all()
-    )
+    all_rooms: RoomModel = db.query(RoomModel).offset(offset).limit(limit).all()
 
     rooms = []
     for room in all_rooms:
