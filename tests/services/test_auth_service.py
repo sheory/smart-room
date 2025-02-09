@@ -1,6 +1,8 @@
 from unittest.mock import MagicMock, patch
+
 import pytest
 from fastapi import HTTPException
+
 from app.core.security import hash_password
 from app.models.user import User
 from app.schemas.user import UserCreate

@@ -2,11 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core import constants
+from app.core.security import get_current_user
 from app.db.settings import get_db
 from app.schemas.reservations import (
     RerservationCreateRequest,
     RerservationCreateResponse,
 )
+from app.schemas.user import UserBase
 from app.services.reservation_service import (
     cancel_reservation,
     is_reservation_valid,
@@ -22,7 +24,9 @@ reservation_router = APIRouter()
     response_model=RerservationCreateResponse,
 )
 async def make_room_reservation(
-    reservation_data: RerservationCreateRequest, db: Session = Depends(get_db)
+    reservation_data: RerservationCreateRequest,
+    db: Session = Depends(get_db),
+    current_user: UserBase = Depends(get_current_user),
 ) -> RerservationCreateResponse:
     try:
         if not is_reservation_valid(reservation_data=reservation_data, db=db):
@@ -44,7 +48,9 @@ async def make_room_reservation(
     "/{reservation_id}", description="Cancel a room reservation", response_model=dict
 )
 async def cancel_room_reservation(
-    reservation_id: int, db: Session = Depends(get_db)
+    reservation_id: int,
+    db: Session = Depends(get_db),
+    current_user: UserBase = Depends(get_current_user),
 ) -> dict:
     try:
         return await cancel_reservation(reservation_id, db)

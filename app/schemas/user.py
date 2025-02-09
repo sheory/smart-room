@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 
 
 class UserCreate(BaseModel):
@@ -17,3 +17,10 @@ class UserResponse(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class UserBase(BaseModel):
+    username: str
+
+    class Config:
+        orm_mode = True

@@ -26,7 +26,10 @@ def test_given_user_data_when_register_user_then_return_access_token(
 
     monkeypatch.setattr("app.api.auth.register_user", mock_register_user)
 
-    user_data = {"username": "testuser", "password": "testpassword"}
+    user_data = {
+        "username": "testuser",
+        "password": "testpassword",
+    }
 
     response = client.post("/auth/register", json=user_data)
 
@@ -63,9 +66,13 @@ def test_given_user_data_when_login_user_then_return_access_token(
 
     monkeypatch.setattr("app.api.auth.login_user", mock_login_user)
 
-    user_data = {"username": "testuser", "password": "testpassword"}
+    user_data = {
+        "username": "testuser",
+        "password": "testpassword",
+        "grant_type": "password",
+    }
 
-    response = client.post("/auth/login", json=user_data)
+    response = client.post("/auth/login", data=user_data)
 
     assert response.status_code == 200
     data = response.json()
@@ -82,9 +89,13 @@ def test_given_user_data_when_login_user_then_raise_exception(
 
     monkeypatch.setattr("app.api.auth.login_user", mock_login_user)
 
-    user_data = {"username": "testuser", "password": "testpassword"}
+    user_data = {
+        "username": "testuser",
+        "password": "testpassword",
+        "grant_type": "password",
+    }
 
-    response = client.post("/auth/login", json=user_data)
+    response = client.post("/auth/login", data=user_data)
 
     assert response.status_code == 500
     data = response.json()

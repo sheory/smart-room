@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Union
 
 from fastapi import Depends, HTTPException, status
@@ -24,7 +24,7 @@ def is_reservation_valid(
             logger.error(constants.INVALID_DATETIME)
             raise HTTPException(status_code=400, detail=constants.INVALID_DATETIME)
 
-        if reservation_data.start_time <= datetime.now():
+        if reservation_data.start_time <= datetime.now(timezone.utc):
             logger.error(constants.INVALID_DATETIME_NOW)
             raise HTTPException(status_code=400, detail=constants.INVALID_DATETIME_NOW)
 

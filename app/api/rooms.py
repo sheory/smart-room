@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.core import constants
+from app.core.security import get_current_user
 from app.db.settings import get_db
 from app.schemas.reservations import ReservationGetAllResponse
 from app.schemas.rooms import (
@@ -12,6 +13,7 @@ from app.schemas.rooms import (
     RoomCreateResponse,
     RoomGetAllResponse,
 )
+from app.schemas.user import UserBase
 from app.services.room_service import (
     check_availability,
     create_room,
@@ -24,7 +26,9 @@ room_router = APIRouter()
 
 @room_router.post("/", description="Create a room", response_model=RoomCreateResponse)
 async def create(
-    room_data: RoomCreateRequest, db: Session = Depends(get_db)
+    room_data: RoomCreateRequest,
+    db: Session = Depends(get_db),
+    current_user: UserBase = Depends(get_current_user),
 ) -> RoomCreateResponse:
     try:
         response = await create_room(room_data, db)
@@ -43,6 +47,7 @@ async def get_all(
     limit: int = Query(10, ge=1),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
+    current_user: UserBase = Depends(get_current_user),
 ) -> RoomGetAllResponse:
     try:
         response = await get_rooms(db=db, limit=limit, offset=offset)
@@ -66,6 +71,7 @@ async def get_room_reservations(
     limit: int = Query(10, ge=1),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
+    current_user: UserBase = Depends(get_current_user),
 ) -> ReservationGetAllResponse:
     try:
         response = await get_reservations(
@@ -87,6 +93,7 @@ async def check_room_availability(
     start_time: str = Query(...),
     end_time: str = Query(...),
     db: Session = Depends(get_db),
+    current_user: UserBase = Depends(get_current_user),
 ) -> Dict[str, str]:
     try:
         room_params = RoomCheckAvailabilityRequest(
