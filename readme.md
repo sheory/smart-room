@@ -69,7 +69,7 @@ Let me know if you need any further modifications! 😊
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/smart-room.git
+git clone https://github.com/sheory/smart-room.git
 cd smart-room
 ```
 

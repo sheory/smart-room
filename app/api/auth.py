@@ -1,22 +1,38 @@
-from fastapi import APIRouter, Depends
+from http.client import HTTPException
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.db.settings import get_db
 from app.schemas.user import Token, UserCreate
 from app.services.auth_service import login_user, register_user
+from app.core.logger import logger
 
 auth_router = APIRouter()
 
 
 @auth_router.post("/register", response_model=Token)
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
-    token = register_user(user_data, db)
-
-    return {"access_token": token, "token_type": "bearer"}
+    try:
+        token = register_user(user_data, db)
+        logger.info(f"User {user_data.username} registered successfully.")
+        return {"access_token": token, "token_type": "bearer"}
+    except Exception as e:
+        logger.error(f"Error registering user {user_data.username}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error registering user: {str(e)}",
+        )
 
 
 @auth_router.post("/login", response_model=Token)
 def login(user_data: UserCreate, db: Session = Depends(get_db)):
-    token = login_user(user_data, db)
-
-    return {"access_token": token, "token_type": "bearer"}
+    try:
+        token = login_user(user_data, db)
+        logger.info(f"User {user_data.username} logged in successfully.")
+        return {"access_token": token, "token_type": "bearer"}
+    except Exception as e:
+        logger.error(f"Error logging in user {user_data.username}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error logging in user: {str(e)}",
+        )
