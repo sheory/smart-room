@@ -6,9 +6,13 @@ import pytest
 from app.models.room import Room
 from app.schemas.reservations import (
     RerservationCreateRequest,
-    RerservationCreateResponse,
 )
-from app.services.reservation_service import cancel_reservation, is_reservation_valid, make_reservation
+
+from app.services.reservation_service import (
+    cancel_reservation,
+    is_reservation_valid,
+    make_reservation,
+)
 
 
 @pytest.mark.asyncio
@@ -78,7 +82,7 @@ async def test_cancel_reservation_not_found():
     [
         (datetime(2025, 2, 1, 10, 0), datetime(2025, 2, 1, 12, 0), True),
         (datetime(2025, 2, 1, 12, 0), datetime(2025, 2, 1, 10, 0), False),
-    ]
+    ],
 )
 @pytest.mark.asyncio
 async def test_is_reservation_valid_time(start_time, end_time, expected_result):
@@ -102,7 +106,7 @@ async def test_is_reservation_valid_time(start_time, end_time, expected_result):
         (True, 5, True),
         (True, 0, False),
         (False, 5, False),
-    ]
+    ],
 )
 @pytest.mark.asyncio
 async def test_is_reservation_valid_room(room_exists, room_capacity, expected_result):
@@ -130,7 +134,7 @@ async def test_is_reservation_valid_room(room_exists, room_capacity, expected_re
     [
         (True, False),
         (False, True),
-    ]
+    ],
 )
 @pytest.mark.asyncio
 async def test_is_reservation_valid_already_reserved(already_reserved, expected_result):

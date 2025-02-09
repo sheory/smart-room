@@ -10,7 +10,10 @@ load_dotenv(getenv("ENV_FILE", ".env"), override=True)
 class Settings(BaseSettings):
     """Application Settings"""
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8"
+    )
     DEBUG: bool = False
     PROJECT_NAME: str = "smart-room"
     VERSION: str = "0.0.1"

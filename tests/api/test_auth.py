@@ -5,7 +5,6 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from main import app
-from app.schemas.user import Token, UserCreate
 
 
 @pytest.fixture
@@ -25,10 +24,7 @@ def test_register(client, mock_db, monkeypatch):
 
     monkeypatch.setattr("app.api.auth.register_user", mock_register_user)
 
-    user_data = {
-        "username": "testuser",
-        "password": "testpassword"
-    }
+    user_data = {"username": "testuser", "password": "testpassword"}
 
     response = client.post("/auth/register", json=user_data)
 
@@ -45,10 +41,7 @@ def test_login(client, mock_db, monkeypatch):
 
     monkeypatch.setattr("app.api.auth.login_user", mock_login_user)
 
-    user_data = {
-        "username": "testuser",
-        "password": "testpassword"
-    }
+    user_data = {"username": "testuser", "password": "testpassword"}
 
     response = client.post("/auth/login", json=user_data)
 
@@ -57,5 +50,3 @@ def test_login(client, mock_db, monkeypatch):
     assert "access_token" in data
     assert data["access_token"] == "mocked_token"
     assert data["token_type"] == "bearer"
-
-

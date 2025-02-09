@@ -18,7 +18,9 @@ def is_reservation_valid(
     reservation_data: RerservationCreateRequest, db: Session = Depends(get_db)
 ) -> Union[RerservationCreateRequest, Dict[str, str]]:
     if not reservation_data.start_time < reservation_data.end_time:
-        logger.error("datetime not valid, start_time should be lower than end_time.")
+        logger.error(
+            "datetime not valid, start_time should be lower than end_time."
+        )
         return False
 
     room = db.get(Room, reservation_data.room_id)
