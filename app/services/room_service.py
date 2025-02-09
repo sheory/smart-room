@@ -7,12 +7,8 @@ from app.db.settings import get_db
 from app.models.reservation import Reservation
 from app.models.room import Room as RoomModel
 from app.schemas.reservations import ReservationGetAllResponse
-from app.schemas.rooms import (
-    RoomCheckAvailabilityRequest,
-    RoomCreateRequest,
-    RoomCreateResponse,
-    RoomGetAllResponse,
-)
+from app.schemas.rooms import (RoomCheckAvailabilityRequest, RoomCreateRequest,
+                               RoomCreateResponse, RoomGetAllResponse)
 
 
 async def create_room(

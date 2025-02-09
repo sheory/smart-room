@@ -6,18 +6,10 @@ import pytest
 from app.models.reservation import Reservation
 from app.models.room import Room
 from app.schemas.reservations import ReservationGetAllResponse
-from app.schemas.rooms import (
-    RoomCheckAvailabilityRequest,
-    RoomCreateRequest,
-    RoomCreateResponse,
-    RoomGetAllResponse,
-)
-from app.services.room_service import (
-    check_availability,
-    create_room,
-    get_reservations,
-    get_rooms,
-)
+from app.schemas.rooms import (RoomCheckAvailabilityRequest, RoomCreateRequest,
+                               RoomCreateResponse, RoomGetAllResponse)
+from app.services.room_service import (check_availability, create_room,
+                                       get_reservations, get_rooms)
 
 # @pytest.mark.asyncio
 # async def test_create_room():

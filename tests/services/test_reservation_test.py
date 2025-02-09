@@ -4,15 +4,10 @@ from unittest.mock import MagicMock
 import pytest
 
 from app.models.room import Room
-from app.schemas.reservations import (
-    RerservationCreateRequest,
-)
-
-from app.services.reservation_service import (
-    cancel_reservation,
-    is_reservation_valid,
-    make_reservation,
-)
+from app.schemas.reservations import RerservationCreateRequest
+from app.services.reservation_service import (cancel_reservation,
+                                              is_reservation_valid,
+                                              make_reservation)
 
 
 @pytest.mark.asyncio
