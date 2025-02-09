@@ -2,27 +2,28 @@
 
 
 ## Table of Contents
-1. [Description](#description)
-2. [Features](#features)
+1. [Description](#🢚-description)
+2. [Features](#🢚-features)
     - [Auth](#auth)
     - [📄 Rooms](#rooms)
     - [Reservations](#reservations)
-3. [Installation](#installation)
+3. [Installation](#🢚-installation)
     - [Clone the Repository](#clone-the-repository)
     - [Environment Variables](#environment-variables)
     - [Setup with Docker Compose](#setup-with-docker-compose)
-4. [API Documentation](#api-documentation)
+4. [API Documentation](#🢚-api-documentation)
 5. [Running Tests](#running-tests)
-6. [CI/CD with GitHub Actions](#ci-cd-with-github-actions)
-7. [Architecture and Database](#architecture-and-database)
+6. [CI/CD with GitHub Actions](#🢚-ci-cd-with-github-actions)
+7. [Architecture and Database](#🢚-architecture-and-database)
     - [Architecture: Monolithic](#architecture-monolithic)
     - [Database: PostgreSQL](#database-postgresql)
-8. [Database Migrations with Alembic](#database-migrations-with-alembic)
-9. [Extra Features Implemented](#extra-features-implemented)
+8. [Database Migrations with Alembic](#🢚-database-migrations-with-alembic)
+9. [Extra Features Implemented](#🢚-extra-features-implemented)
+
 
 ---
 
-## Description
+## 🢚 Description
 
 The **smart-room** is a backend system designed to manage meeting room reservations. This API allows users to:
 
@@ -34,7 +35,7 @@ The **smart-room** is a backend system designed to manage meeting room reservati
 It ensures that no conflicts occur when reserving the same room at overlapping times.
 
 ---
-## Features
+## 🢚 Features
 
 ### Auth
 
@@ -64,7 +65,7 @@ Let me know if you need any further modifications! 😊
 
 ---
 
-## Installation
+## 🢚 Installation
 
 ### 1. Clone the repository
 ```bash
@@ -97,11 +98,11 @@ docker-compose up --build
 ```
 
 This command will: </br>
-➜ Build the images for the application and the database. </br>
-➜ Start the application on http://localhost:8000 and connect it to the database.
+🢚 Build the images for the application and the database. </br>
+🢚 Start the application on http://localhost:8000 and connect it to the database.
 
 
-## API Documentation
+## 🢚 API Documentation
 Once the server is running, you can access the Swagger UI documentation at:
 ```bash
 http://localhost:8000/docs
@@ -117,7 +118,7 @@ To run the tests, use the following command:
 docker-compose exec fastapi_app pytest
 ```
 
-## CI/CD with GitHub Actions
+## 🢚 CI/CD with GitHub Actions
 
 This project is integrated with **GitHub Actions** for continuous integration and deployment. The pipeline executes the following steps:
 
@@ -131,7 +132,7 @@ This project is integrated with **GitHub Actions** for continuous integration an
 These steps ensure that your code is always correctly formatted, linted, and well-tested before being merged or deployed.
 
 
-## Architecture and Database
+## 🢚 Architecture and Database
 
 ### Architecture: Monolithic
 
@@ -142,14 +143,14 @@ The application follows a **monolithic** architecture, meaning that all componen
 The project uses **PostgreSQL** as the database.  <br>PostgreSQL was selected due to its reliability, powerful features (such as ACID compliance and support for complex queries), and its ability to scale as the application grows.
 
 
-## Database Migrations with Alembic
+## 🢚 Database Migrations with Alembic
 
 To improve database management and ensure smooth transitions between schema changes, we are using **Alembic** as the versioning tool for migrations.
 
 When you run `docker-compose up --build`, Alembic automatically applies the database migrations. This ensures that your database schema is always up to date with the latest changes, without needing any extra steps.
 
 
-## Extra Features Implemented
+## 🢚 Extra Features Implemented
 **User Authentication & Authorization**: All routes needs to be authenticated to use it.
 
 **Notifications**: Simulated notifications via logs or console output to register user's action.
