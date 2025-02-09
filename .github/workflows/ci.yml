@@ -1,4 +1,4 @@
-name: SmartRoom CI/CD Pipeline
+name: SmartRoom CI Pipeline
 
 on:
   push:
