@@ -77,7 +77,7 @@ async def test_get_room_reservations(client, mock_db, monkeypatch):
 
     monkeypatch.setattr("app.api.rooms.get_reservations", mock_get_reservations)
 
-    response = client.get(f"/rooms/1/reservations?limit=1&offset=0")
+    response = client.get("/rooms/1/reservations?limit=1&offset=0")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data["reservations"], list)
@@ -93,7 +93,8 @@ async def test_check_room_availability(client, mock_db, monkeypatch):
     monkeypatch.setattr("app.api.rooms.check_availability", mock_check_availability)
 
     response = client.get(
-        "/rooms/1/availability?start_time=2025-02-01T10:00:00&end_time=2025-02-01T12:00:00"
+        "/rooms/1/availability?start_time=2025-02-01"
+        "T10:00:00&end_time=2025-02-01T12:00:00"
     )
 
     assert response.status_code == 200

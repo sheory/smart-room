@@ -19,7 +19,7 @@ async def test_get_rooms():
         Room(id=2, name="Room 2", capacity=15, location="Andar 2"),
     ]
 
-    mock_db.query.return_value.offset.return_value.limit.return_value.all.return_value = (
+    mock_db.query().offset().limit().all.return_value = (
         mock_rooms
     )
 
@@ -33,7 +33,7 @@ async def test_get_rooms():
     assert response.rooms[0].name == "Room 1"
     assert response.rooms[1].name == "Room 2"
 
-    mock_db.query.return_value.offset.return_value.limit.return_value.all.assert_called_once()
+    mock_db.query().offset().limit().all.assert_called_once()
 
 
 @pytest.mark.asyncio
@@ -57,7 +57,7 @@ async def test_get_reservations():
         ),
     ]
 
-    mock_db.query.return_value.join.return_value.offset.return_value.limit.return_value = (
+    mock_db.query().join().offset().limit.return_value = (
         mock_reservations
     )
 
@@ -71,7 +71,7 @@ async def test_get_reservations():
     assert response.reservations[0].user_name == "name 1"
     assert response.reservations[1].user_name == "name 2"
 
-    mock_db.query.return_value.join.return_value.offset.return_value.limit.assert_called_once()
+    mock_db.query().join().offset().limit.assert_called_once()
 
 
 @pytest.mark.parametrize(
@@ -103,7 +103,7 @@ async def test_get_reservations():
 async def test_check_availability(params, mock_reservations, expected_result):
     mock_db = MagicMock()
 
-    mock_db.query.return_value.join.return_value.filter.return_value.first.return_value = (
+    mock_db.query.return_value.join().filter().first.return_value = (
         mock_reservations[0] if mock_reservations else None
     )
 
@@ -111,4 +111,4 @@ async def test_check_availability(params, mock_reservations, expected_result):
 
     assert response == expected_result
     if expected_result is False:
-        mock_db.query.return_value.join.return_value.filter.return_value.first.assert_called_once()
+        mock_db.query.return_value.join().filter().first.assert_called_once()
