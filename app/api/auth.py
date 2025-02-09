@@ -1,12 +1,13 @@
 from http.client import HTTPException
+
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
+from app.core import constants
+from app.core.logger import logger
 from app.db.settings import get_db
 from app.schemas.user import Token, UserCreate
 from app.services.auth_service import login_user, register_user
-from app.core.logger import logger
-from app.core import constants
 
 auth_router = APIRouter()
 
@@ -18,7 +19,9 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
         logger.info(f"User {user_data.username} registered successfully.")
         return {"access_token": token, "token_type": "bearer"}
     except Exception as e:
-        logger.error(f"{constants.ERROR_REGISTERING_USER} {user_data.username}: {str(e)}")
+        logger.error(
+            f"{constants.ERROR_REGISTERING_USER} {user_data.username}: {str(e)}"
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"{constants.ERROR_REGISTERING_USER}: {str(e)}",

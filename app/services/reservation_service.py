@@ -1,10 +1,10 @@
 from typing import Dict, Union
 
-from app.core import constants
 from fastapi import Depends, HTTPException, status
-from sqlalchemy import and_, or_
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
+from app.core import constants
 from app.core.logger import logger
 from app.db.settings import get_db
 from app.models.reservation import Reservation as ReservationModel
@@ -17,35 +17,27 @@ from app.schemas.reservations import (
 
 def is_reservation_valid(
     reservation_data: RerservationCreateRequest, db: Session = Depends(get_db)
-) -> Union[RerservationCreateRequest, Dict[str, str]]:
+) -> bool:
     try:
         if not reservation_data.start_time < reservation_data.end_time:
-            logger.error(
-                constants.INVALID_DATETIME
-            )
-            return False
+            logger.error(constants.INVALID_DATETIME)
+            raise HTTPException(status_code=400, detail=constants.INVALID_DATETIME)
 
         room = db.get(Room, reservation_data.room_id)
         if not room:
             logger.error(constants.ROOM_DONT_EXISTS)
-            return False
+            raise HTTPException(status_code=400, detail=constants.ROOM_DONT_EXISTS)
 
         if not room.capacity:
             logger.error(constants.ROOM_CAPACITY_FULL)
-            return False
+            raise HTTPException(status_code=400, detail=constants.ROOM_CAPACITY_FULL)
 
-        already_reserved = (  # TODO - validar logica
+        already_reserved = (
             db.query(ReservationModel)
-            .filter(  # TODO - generalizar logica  pq ja eh utilziada em outro lugar
-                or_(
-                    and_(
-                        ReservationModel.start_time < reservation_data.end_time,
-                        ReservationModel.end_time > reservation_data.start_time,
-                    ),
-                    or_(
-                        ReservationModel.start_time == reservation_data.start_time,
-                        ReservationModel.end_time == reservation_data.end_time,
-                    ),
+            .filter(
+                and_(
+                    reservation_data.start_time < ReservationModel.end_time,
+                    reservation_data.end_time > ReservationModel.start_time,
                 ),
                 ReservationModel.room_id == reservation_data.room_id,
             )
@@ -54,14 +46,20 @@ def is_reservation_valid(
 
         if already_reserved:
             logger.error(constants.ROOM_ALREADY_RESERVERD)
-            return False
+            raise HTTPException(
+                status_code=400, detail=constants.ROOM_ALREADY_RESERVERD
+            )
 
         return True
     except Exception as e:
         logger.error(f"{constants.ERROR_VALIDATING_RESERVATION}: {str(e)}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=constants.ERROR_VALIDATING_RESERVATION,
+            status_code=(
+                e.status_code
+                if isinstance(e, HTTPException)
+                else status.HTTP_500_INTERNAL_SERVER_ERROR
+            ),
+            detail=e.detail or str(e),
         )
 
 

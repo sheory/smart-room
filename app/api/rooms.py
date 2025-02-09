@@ -1,8 +1,9 @@
-from typing import Dict, Union
-from app.core import constants
-from fastapi import APIRouter, Depends, Query, HTTPException, status
+from typing import Dict
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
+from app.core import constants
 from app.db.settings import get_db
 from app.schemas.reservations import ReservationGetAllResponse
 from app.schemas.rooms import (
@@ -21,10 +22,10 @@ from app.services.room_service import (
 room_router = APIRouter()
 
 
-@room_router.post("/", description="Create a room")
+@room_router.post("/", description="Create a room", response_model=RoomCreateResponse)
 async def create(
     room_data: RoomCreateRequest, db: Session = Depends(get_db)
-) -> Union[RoomCreateResponse, HTTPException]:
+) -> RoomCreateResponse:
     try:
         response = await create_room(room_data, db)
         return response
@@ -37,12 +38,12 @@ async def create(
         )
 
 
-@room_router.get("/", description="Get all rooms")
+@room_router.get("/", description="Get all rooms", response_model=RoomGetAllResponse)
 async def get_all(
     limit: int = Query(10, ge=1),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
-) -> Union[RoomGetAllResponse, HTTPException]:
+) -> RoomGetAllResponse:
     try:
         response = await get_rooms(db=db, limit=limit, offset=offset)
         return response
@@ -55,13 +56,17 @@ async def get_all(
         )
 
 
-@room_router.get("/{room_id}/reservations", description="Get room reservations")
+@room_router.get(
+    "/{room_id}/reservations",
+    description="Get room reservations",
+    response_model=ReservationGetAllResponse,
+)
 async def get_room_reservations(
     room_id: int,
     limit: int = Query(10, ge=1),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
-) -> Union[ReservationGetAllResponse, HTTPException]:
+) -> ReservationGetAllResponse:
     try:
         response = await get_reservations(
             limit=limit, offset=offset, room_id=room_id, db=db
@@ -82,7 +87,7 @@ async def check_room_availability(
     start_time: str = Query(...),
     end_time: str = Query(...),
     db: Session = Depends(get_db),
-) -> Union[Dict[str, str], HTTPException]:
+) -> Dict[str, str]:
     try:
         room_params = RoomCheckAvailabilityRequest(
             id=id, start_time=start_time, end_time=end_time

@@ -5,14 +5,14 @@ while ! nc -z db 5432; do
   sleep 1
 done
 
-echo "Database is up. Checking for migrations..."
+echo "Database is up. Applying migrations..."
+alembic upgrade head
 
-# Check if the migration folder is initialized or if we need to apply migrations
-if alembic current | grep -q "No rows"; then
-  echo "Applying migrations..."
-  alembic upgrade head
+if [ $? -eq 0 ]; then
+  echo "Migrations applied successfully."
 else
-  echo "Migrations are already applied."
+  echo "Failed to apply migrations."
+  exit 1
 fi
 
 echo "Starting the app..."

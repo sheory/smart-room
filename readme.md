@@ -94,11 +94,12 @@ The project uses **Docker Compose** to run both the application and the database
    From the root of the project, run the following command to start the application and the database:
 
 ```bash
-docker-compose up --build
+docker-compose up -d --build
 ```
 
 This command will: </br>
 🢚 Build the images for the application and the database. </br>
+🢚 Run database migrations. </br>
 🢚 Start the application on http://localhost:8000 and connect it to the database.
 
 

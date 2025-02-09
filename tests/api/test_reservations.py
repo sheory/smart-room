@@ -20,7 +20,7 @@ def client():
 
 @pytest.mark.asyncio
 async def test_make_room_reservation(client, mock_db, monkeypatch):
-    async def mock_is_reservation_valid(reservation_data, db):
+    def mock_is_reservation_valid(reservation_data, db):
         return True
 
     async def mock_make_reservation(reservation_data, db):
@@ -101,6 +101,6 @@ async def test_make_room_reservation_invalid(client, mock_db, monkeypatch):
     response = client.post("/reservations/", json=reservation_data)
 
     # Verificando se a reserva foi invalidada corretamente
-    assert response.status_code == 200
+    assert response.status_code == 400
     data = response.json()
-    assert data["error"] == "Not a valid reservation"
+    assert data["detail"] == "Not a valid reservation"

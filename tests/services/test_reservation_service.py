@@ -26,7 +26,7 @@ async def test_make_reservation_room_not_exist():
 
     response = await make_reservation(reservation_data, mock_db)
 
-    assert response == {"error": "room does not exist."}
+    assert response == {"error": "Room does not exists."}
 
 
 @pytest.mark.asyncio
@@ -43,7 +43,7 @@ async def test_make_reservation_room_full():
 
     response = await make_reservation(reservation_data, mock_db)
 
-    assert response == {"error": "room capacity is already full."}
+    assert response == {"error": "Room capacity is already full."}
 
 
 @pytest.mark.asyncio
@@ -59,7 +59,7 @@ async def test_cancel_reservation_success():
 
     response = await cancel_reservation(reservation_id, mock_db)
 
-    assert response == {"message": "reservation cancelled successfully."}
+    assert response == {"message": "Reservation cancelled successfully."}
 
 
 @pytest.mark.asyncio
@@ -71,18 +71,22 @@ async def test_cancel_reservation_not_found():
 
     response = await cancel_reservation(reservation_id, mock_db)
 
-    assert response == {"message": "reservation not found"}
+    assert response == {"message": "Reservation not found"}
 
 
 @pytest.mark.parametrize(
-    "start_time, end_time, expected_result",
+    "start_time, end_time, should_raise, expected_detail",
     [
-        (datetime(2025, 2, 1, 10, 0), datetime(2025, 2, 1, 12, 0), True),
-        (datetime(2025, 2, 1, 12, 0), datetime(2025, 2, 1, 10, 0), False),
+        (
+            datetime(2025, 2, 1, 12, 0),
+            datetime(2025, 2, 1, 10, 0),
+            True,
+            "datetime not valid",
+        ),
+        (datetime(2025, 2, 1, 10, 0), datetime(2025, 2, 1, 12, 0), False, None),
     ],
 )
-@pytest.mark.asyncio
-async def test_is_reservation_valid_time(start_time, end_time, expected_result):
+def test_is_reservation_valid_time(start_time, end_time, should_raise, expected_detail):
     reservation_data = RerservationCreateRequest(
         room_id=1,
         user_name="test1",
@@ -92,21 +96,30 @@ async def test_is_reservation_valid_time(start_time, end_time, expected_result):
 
     mock_db = MagicMock()
     mock_db.query().filter().first.return_value = False
-    result = is_reservation_valid(reservation_data, mock_db)
-
-    assert result == expected_result
+    if should_raise:
+        with pytest.raises(Exception) as exc_info:
+            is_reservation_valid(reservation_data, mock_db)
+        assert exc_info.value.status_code == 400
+        assert (
+            exc_info.value.detail
+            == "datetime not valid, start_time should be lower than end_time."
+        )
+    else:
+        result = is_reservation_valid(reservation_data, mock_db)
+        assert result is True
 
 
 @pytest.mark.parametrize(
-    "room_exists, room_capacity, expected_result",
+    "room_exists, room_capacity, should_raise, expected_detail",
     [
-        (True, 5, True),
-        (True, 0, False),
-        (False, 5, False),
+        (False, 5, True, "Room does not exists."),
+        (True, 0, True, "Room capacity is already full."),
+        (True, 5, False, None),
     ],
 )
-@pytest.mark.asyncio
-async def test_is_reservation_valid_room(room_exists, room_capacity, expected_result):
+def test_is_reservation_valid_room(
+    room_exists, room_capacity, should_raise, expected_detail
+):
     reservation_data = RerservationCreateRequest(
         room_id=1,
         user_name="test1",
@@ -115,26 +128,29 @@ async def test_is_reservation_valid_room(room_exists, room_capacity, expected_re
     )
 
     mock_db = MagicMock()
-    result = is_reservation_valid(reservation_data, mock_db)
-
     mock_room = Room(id=1, capacity=room_capacity) if room_exists else None
     mock_db.get.return_value = mock_room
     mock_db.query().filter().first.return_value = False
 
-    result = is_reservation_valid(reservation_data, mock_db)
-
-    assert result == expected_result
+    if should_raise:
+        with pytest.raises(Exception) as exc_info:
+            is_reservation_valid(reservation_data, mock_db)
+        assert exc_info.value.detail == expected_detail
+    else:
+        result = is_reservation_valid(reservation_data, mock_db)
+        assert result is True
 
 
 @pytest.mark.parametrize(
-    "already_reserved, expected_result",
+    "already_reserved, should_raise, expected_detail",
     [
-        (True, False),
-        (False, True),
+        (True, True, "Room already reserved for this date."),
+        (False, False, None),
     ],
 )
-@pytest.mark.asyncio
-async def test_is_reservation_valid_already_reserved(already_reserved, expected_result):
+def test_is_reservation_valid_already_reserved(
+    already_reserved, should_raise, expected_detail
+):
     reservation_data = RerservationCreateRequest(
         room_id=1,
         user_name="test1",
@@ -145,6 +161,10 @@ async def test_is_reservation_valid_already_reserved(already_reserved, expected_
     mock_db = MagicMock()
     mock_db.query().filter().first.return_value = already_reserved
 
-    result = is_reservation_valid(reservation_data, mock_db)
-
-    assert result == expected_result
+    if should_raise:
+        with pytest.raises(Exception) as exc_info:
+            is_reservation_valid(reservation_data, mock_db)
+        assert exc_info.value.detail == expected_detail
+    else:
+        result = is_reservation_valid(reservation_data, mock_db)
+        assert result is True

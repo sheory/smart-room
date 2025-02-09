@@ -1,8 +1,8 @@
-from app.core import constants
-from fastapi import Depends, HTTPException
-from fastapi import status
+from fastapi import Depends, HTTPException, status
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
+
+from app.core import constants
 from app.core.logger import logger
 from app.db.settings import get_db
 from app.models.reservation import Reservation
@@ -70,7 +70,6 @@ async def get_reservations(
             .join(RoomModel, Reservation.room_id == room_id)
             .offset(offset)
             .limit(limit)
-            .all()
         )
 
         reservations = []
@@ -80,10 +79,12 @@ async def get_reservations(
         logger.info(f"Got all reservations for room {room_id} successfully.")
         return ReservationGetAllResponse(reservations=reservations)
     except Exception as e:
-        logger.error(f"Error getting reservations for room {room_id}: {str(e)}")
+        logger.error(
+            f"{constants.ERROR_GETTING_RESERVATIONS} for room {room_id}: {str(e)}"
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error getting reservations",
+            detail=constants.ERROR_GETTING_RESERVATIONS,
         )
 
 
@@ -111,14 +112,14 @@ async def check_availability(
         )
 
         if any_room:
-            logger.error("Room already reserved at this date and time.")
+            logger.error(constants.ROOM_ALREADY_RESERVERD)
             return False
 
         logger.info(f"Room {params.id} available.")
         return True
     except Exception as e:
-        logger.error(f"Error checking availability for room {params.id}: {str(e)}")
+        logger.error(f"{constants.ERROR_CHECKING_ROOM} {params.id}: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error checking room availability",
+            detail=constants.ERROR_CHECKING_ROOM,
         )

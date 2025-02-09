@@ -41,7 +41,7 @@ def test_register_user_already_exists():
         register_user(user_data, mock_db)
 
     assert exc_info.value.status_code == 400
-    assert exc_info.value.detail == "User already exists"
+    assert "User already exists" in exc_info.value.detail
 
 
 def test_login_user_success():
@@ -77,4 +77,4 @@ def test_login_user_invalid_credentials():
         login_user(user_data, mock_db)
 
     assert exc_info.value.status_code == 400
-    assert exc_info.value.detail == "Invalid credentials"
+    assert "Invalid credentials" in exc_info.value.detail
