@@ -53,7 +53,6 @@ def test_login_user_success():
     mock_user = User(username="test_user", hashed_password=hashed_password)
     mock_db.query.return_value.filter.return_value.first.return_value = mock_user
 
-    # Mockando a função verify_password
     global verify_password
     verify_password = MagicMock(return_value=True)
 
@@ -73,7 +72,6 @@ def test_login_user_invalid_credentials():
     mock_user = User(username="test_user", hashed_password=hashed_password)
     mock_db.query.return_value.filter.return_value.first.return_value = mock_user
 
-    # Mockando a função verify_password para retornar False
     global verify_password
     verify_password = MagicMock(return_value=False)
 

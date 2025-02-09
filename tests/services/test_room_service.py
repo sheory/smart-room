@@ -6,25 +6,9 @@ import pytest
 from app.models.reservation import Reservation
 from app.models.room import Room
 from app.schemas.reservations import ReservationGetAllResponse
-from app.schemas.rooms import (RoomCheckAvailabilityRequest, RoomCreateRequest,
-                               RoomCreateResponse, RoomGetAllResponse)
-from app.services.room_service import (check_availability, create_room,
+from app.schemas.rooms import (RoomCheckAvailabilityRequest, RoomGetAllResponse)
+from app.services.room_service import (check_availability,
                                        get_reservations, get_rooms)
-
-# @pytest.mark.asyncio
-# async def test_create_room():
-#     mock_db = MagicMock()
-
-#     room_data = RoomCreateRequest(name="Room 1", capacity=10, location="Andar 1")
-#     response = await create_room(room_data, mock_db)
-
-#     assert isinstance(response, RoomCreateResponse)
-#     assert response.name == "Room 1"
-#     assert response.capacity == 10
-
-#     mock_db.add.assert_called_once()
-#     mock_db.commit.assert_called_once()
-#     mock_db.refresh.assert_called_once()
 
 
 @pytest.mark.asyncio
