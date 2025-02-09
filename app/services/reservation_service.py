@@ -96,13 +96,19 @@ async def make_reservation(
 
 
 async def cancel_reservation(
-    reservation_id: int, db: Session = Depends(get_db)
+    reservation_id: int, username: str, db: Session = Depends(get_db)
 ) -> Dict[str, str]:
     try:
         reservation = db.get(ReservationModel, reservation_id)
 
         if not reservation:
             return {"message": constants.RESERVATION_NOT_FOUND}
+
+        if reservation.user_name != username:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=constants.NOT_AUTHORIZED_TO_CANCEL_RESERVATION,
+            )
 
         room = db.get(Room, reservation.room_id)
         room.capacity += 1
@@ -114,8 +120,12 @@ async def cancel_reservation(
     except Exception as e:
         logger.error(f"{constants.ERROR_CANCELLING_RESERVATION}: {str(e)}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=constants.ERROR_CANCELLING_RESERVATION,
+            status_code=(
+                e.status_code
+                if isinstance(e, HTTPException)
+                else status.HTTP_500_INTERNAL_SERVER_ERROR
+            ),
+            detail=e.detail or str(e),
         )
 
 

@@ -62,11 +62,11 @@ async def test_cancel_reservation_when_success_then_return_message():
     mock_db = MagicMock()
     mock_reservation = MagicMock()
     mock_reservation.room_id = 1
-    mock_db.get.return_value = mock_reservation
+    mock_db.get().user_name = "test1"
     mock_db.delete = MagicMock()
     mock_db.commit = MagicMock()
 
-    response = await cancel_reservation(reservation_id, mock_db)
+    response = await cancel_reservation(reservation_id, "test1", mock_db)
 
     assert response == {"message": "Reservation cancelled successfully."}
 
@@ -78,7 +78,7 @@ async def test_cancel_reservation_when_not_found_then_return_message():
     mock_db = MagicMock()
     mock_db.get.return_value = None
 
-    response = await cancel_reservation(reservation_id, mock_db)
+    response = await cancel_reservation(reservation_id, "test1", mock_db)
 
     assert response == {"message": "Reservation not found"}
 

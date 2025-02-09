@@ -2,6 +2,7 @@ from datetime import timedelta
 from unittest.mock import MagicMock
 
 import pytest
+from fastapi import HTTPException
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -94,7 +95,7 @@ async def test_make_room_reservation(
 async def test_cancel_room_reservation(
     client, override_get_db, monkeypatch, auth_token, mock_get_current_user
 ):
-    async def mock_cancel_reservation(reservation_id, db):
+    async def mock_cancel_reservation(reservation_id, db, username):
         return {"message": "Reservation canceled successfully"}
 
     headers = {"Authorization": f"Bearer {auth_token}"}
@@ -114,8 +115,8 @@ async def test_cancel_room_reservation(
 async def test_cancel_room_reservation_error(
     client, override_get_db, monkeypatch, auth_token, mock_get_current_user
 ):
-    async def mock_cancel_reservation(reservation_id, db):
-        raise Exception("Test error")
+    async def mock_cancel_reservation(reservation_id, db, username):
+        raise HTTPException(detail="Error cancelling reservation", status_code=500)
 
     monkeypatch.setattr(
         "app.api.reservations.cancel_reservation", mock_cancel_reservation
