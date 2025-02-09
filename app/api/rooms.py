@@ -1,4 +1,5 @@
 from typing import Dict, Union
+from app.core import constants
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -32,7 +33,7 @@ async def create(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal Server Error",
+            detail=constants.INTERNAL_SERVER_ERROR,
         )
 
 
@@ -50,7 +51,7 @@ async def get_all(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal Server Error",
+            detail=constants.INTERNAL_SERVER_ERROR,
         )
 
 
@@ -71,7 +72,7 @@ async def get_room_reservations(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal Server Error",
+            detail=constants.INTERNAL_SERVER_ERROR,
         )
 
 
@@ -95,5 +96,5 @@ async def check_room_availability(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal Server Error",
+            detail=constants.INTERNAL_SERVER_ERROR,
         )

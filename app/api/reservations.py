@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.db.settings import get_db
+from app.core import constants
 from app.schemas.reservations import (
     RerservationCreateRequest,
     RerservationCreateResponse,
@@ -26,7 +27,7 @@ async def make_room_reservation(
             reservation_data=reservation_data, db=db
         )
         if not valid_reservation:
-            return {"error": "Not a valid reservation"}
+            return {"error": constants.INVALID_RESERVATION}
 
         response = await make_reservation(reservation_data=reservation_data, db=db)
 
@@ -34,7 +35,7 @@ async def make_room_reservation(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error making reservation: {str(e)}",
+            detail=f"{constants.ERROR_MAKING_RESERVATION}: {str(e)}",
         )
 
 
@@ -49,5 +50,5 @@ async def cancel_room_reservation(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error cancelling reservation: {str(e)}",
+            detail=f"{constants.ERROR_CANCELLING_RESERVATION}: {str(e)}",
         )

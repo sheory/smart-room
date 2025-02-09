@@ -1,3 +1,4 @@
+from app.core import constants
 from fastapi import Depends, HTTPException
 from fastapi import status
 from sqlalchemy import and_, or_
@@ -25,14 +26,14 @@ async def create_room(
         db.commit()
         db.refresh(new_room)
 
-        logger.info(f"Room {new_room.name} created successfully.")
+        logger.info(f"{constants.ROOM_CREATED_SUCCESSFULLY}: {new_room.name}.")
 
         return RoomCreateResponse(**new_room.__dict__)
     except Exception as e:
-        logger.error(f"Error creating room: {str(e)}")
+        logger.error(f"{constants.ERROR_CREATING_ROOM}: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error creating room",
+            detail=constants.ERROR_CREATING_ROOM,
         )
 
 
@@ -53,10 +54,10 @@ async def get_rooms(
 
         return RoomGetAllResponse(rooms=rooms)
     except Exception as e:
-        logger.error(f"Error getting rooms: {str(e)}")
+        logger.error(f"{constants.ERROR_GETTING_ROOMS}: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error getting rooms",
+            detail=constants.ERROR_GETTING_ROOMS,
         )
 
 

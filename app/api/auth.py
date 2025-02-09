@@ -6,6 +6,7 @@ from app.db.settings import get_db
 from app.schemas.user import Token, UserCreate
 from app.services.auth_service import login_user, register_user
 from app.core.logger import logger
+from app.core import constants
 
 auth_router = APIRouter()
 
@@ -17,10 +18,10 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
         logger.info(f"User {user_data.username} registered successfully.")
         return {"access_token": token, "token_type": "bearer"}
     except Exception as e:
-        logger.error(f"Error registering user {user_data.username}: {str(e)}")
+        logger.error(f"{constants.ERROR_REGISTERING_USER} {user_data.username}: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error registering user: {str(e)}",
+            detail=f"{constants.ERROR_REGISTERING_USER}: {str(e)}",
         )
 
 
@@ -31,8 +32,8 @@ def login(user_data: UserCreate, db: Session = Depends(get_db)):
         logger.info(f"User {user_data.username} logged in successfully.")
         return {"access_token": token, "token_type": "bearer"}
     except Exception as e:
-        logger.error(f"Error logging in user {user_data.username}: {str(e)}")
+        logger.error(f"{constants.ERROR_LOGGING_USER} {user_data.username}: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error logging in user: {str(e)}",
+            detail=f"{constants.ERROR_LOGGING_USER}: {str(e)}",
         )

@@ -1,3 +1,4 @@
+from app.core import constants
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -12,9 +13,9 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
     try:
         user = db.query(User).filter(User.username == user_data.username).first()
         if user:
-            logger.error(f"User {user_data.username} already exists.")
+            logger.error(f"{constants.USER_ALREADY_EXISTS}: {user_data.username}.")
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists"
+                status_code=status.HTTP_400_BAD_REQUEST, detail=constants.USER_ALREADY_EXISTS
             )
 
         new_user = User(
@@ -26,14 +27,14 @@ def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
         db.refresh(new_user)
 
         token = create_access_token({"sub": new_user.username})
-        logger.info(f"User {new_user.username} registered successfully.")
+        logger.info(f"{constants.USER_REGISTERED_SUCCESSFULLY}: {new_user.username}.")
 
         return token
     except Exception as e:
-        logger.error(f"Error registering user {user_data.username}: {str(e)}")
+        logger.error(f"{constants.ERROR_REGISTERING_USER} {user_data.username}: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error registering user: {str(e)}",
+            detail=f"{constants.ERROR_REGISTERING_USER}: {str(e)}",
         )
 
 
@@ -41,9 +42,9 @@ def login_user(user_data: UserCreate, db: Session = Depends(get_db)):
     try:
         user = db.query(User).filter(User.username == user_data.username).first()
         if not user or not verify_password(user_data.password, user.hashed_password):
-            logger.error(f"Invalid credentials for user {user_data.username}.")
+            logger.error(f"{constants.INVALID_CREDENTIALS} for user {user_data.username}.")
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid credentials"
+                status_code=status.HTTP_400_BAD_REQUEST, detail=constants.INVALID_CREDENTIALS
             )
 
         token = create_access_token({"sub": user.username})
@@ -51,8 +52,8 @@ def login_user(user_data: UserCreate, db: Session = Depends(get_db)):
 
         return token
     except Exception as e:
-        logger.error(f"Error logging in user {user_data.username}: {str(e)}")
+        logger.error(f"{constants.ERROR_LOGGING_USER} {user_data.username}: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error logging in user: {str(e)}",
+            detail=f"{constants.ERROR_LOGGING_USER}: {str(e)}",
         )

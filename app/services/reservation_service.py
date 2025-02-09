@@ -1,5 +1,6 @@
 from typing import Dict, Union
 
+from app.core import constants
 from fastapi import Depends, HTTPException, status
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
@@ -20,17 +21,17 @@ def is_reservation_valid(
     try:
         if not reservation_data.start_time < reservation_data.end_time:
             logger.error(
-                "datetime not valid, start_time should be lower than end_time."
+                constants.INVALID_DATETIME
             )
             return False
 
         room = db.get(Room, reservation_data.room_id)
         if not room:
-            logger.error("room does not exists.")
+            logger.error(constants.ROOM_DONT_EXISTS)
             return False
 
         if not room.capacity:
-            logger.error("room capacity is already full.")
+            logger.error(constants.ROOM_CAPACITY_FULL)
             return False
 
         already_reserved = (  # TODO - validar logica
@@ -52,15 +53,15 @@ def is_reservation_valid(
         )
 
         if already_reserved:
-            logger.error("room already reserved for this date.")
+            logger.error(constants.ROOM_ALREADY_RESERVERD)
             return False
 
         return True
     except Exception as e:
-        logger.error(f"Error validating reservation: {str(e)}")
+        logger.error(f"{constants.ERROR_VALIDATING_RESERVATION}: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error validating reservation",
+            detail=constants.ERROR_VALIDATING_RESERVATION,
         )
 
 
@@ -73,11 +74,11 @@ async def make_reservation(
         room = db.get(Room, reservation_data.room_id)
 
         if not room:
-            logger.error("room does not exist.")
-            return {"error": "room does not exist."}
+            logger.error(constants.ROOM_DONT_EXISTS)
+            return {"error": constants.ROOM_DONT_EXISTS}
         if not room.capacity:
-            logger.error("room capacity is already full.")
-            return {"error": "room capacity is already full."}
+            logger.error(constants.ROOM_CAPACITY_FULL)
+            return {"error": constants.ROOM_CAPACITY_FULL}
 
         room.capacity -= 1
 
@@ -85,14 +86,14 @@ async def make_reservation(
         db.commit()
         db.refresh(new_reservation)
 
-        logger.info("room reserved successfully.")
+        logger.info(constants.ROOM_RESERVED_SUCCESSFULLY)
 
         return RerservationCreateResponse(**new_reservation.__dict__)
     except Exception as e:
-        logger.error(f"Error making reservation: {str(e)}")
+        logger.error(f"{constants.ERROR_MAKING_RESERVATION}: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error making reservation",
+            detail=constants.ERROR_MAKING_RESERVATION,
         )
 
 
@@ -103,18 +104,18 @@ async def cancel_reservation(
         reservation = db.get(ReservationModel, reservation_id)
 
         if not reservation:
-            return {"message": "reservation not found"}
+            return {"message": constants.RESERVATION_NOT_FOUND}
 
         room = db.get(Room, reservation.room_id)
         room.capacity += 1
         db.delete(reservation)
         db.commit()
 
-        logger.info("reservation cancelled successfully.")
-        return {"message": "reservation cancelled successfully."}
+        logger.info(constants.RESERVATION_CANCELLED_SUCCESSFULLY)
+        return {"message": constants.RESERVATION_CANCELLED_SUCCESSFULLY}
     except Exception as e:
-        logger.error(f"Error cancelling reservation: {str(e)}")
+        logger.error(f"{constants.ERROR_CANCELLING_RESERVATION}: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error cancelling reservation",
+            detail=constants.ERROR_CANCELLING_RESERVATION,
         )
