@@ -13,17 +13,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app_network
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "your_db_user"]
-      interval: 5s
-      retries: 5
 
   api:
     build: .
     container_name: fastapi_app
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     env_file:
       - .env
     ports:

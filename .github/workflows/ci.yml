@@ -6,43 +6,24 @@ on:
       - master
 
 jobs:
-  docker:
-    timeout-minutes: 10
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v1
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
-    - name: Create .env file
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
       run: |
-        echo "POSTGRES_DB=your_db_name" > .env
-        echo "POSTGRES_USER=your_db_user" >> .env
-        echo "POSTGRES_PASSWORD=your_db_password" >> .env
-        echo "DB_HOST=db" >> .env
-        echo "DB_PORT=5432" >> .env
-
-    - name: Start containers
-      run: docker compose -f "docker-compose.yml" up -d --build
-
-    - name: Wait for PostgreSQL to be ready
-      run: |
-        echo "Waiting for PostgreSQL to be ready..."
-        until docker exec db pg_isready -U your_db_user -d your_db_name; do
-          sleep 2
-        done
-
-    - name: Run migrations
-      run: docker exec fastapi_app alembic upgrade head
-
-    - name: Check database logs
-      if: failure()
-      run: docker logs db
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest-cov
 
     - name: Run tests with coverage
       run: |
-        docker exec fastapi_app pytest --cov=app --cov-fail-under=95 tests/
-
-    - name: Stop containers
-      if: always()
-      run: docker compose -f "docker-compose.yml" down
+        pytest --cov=app --cov-fail-under=95 tests/
