@@ -50,7 +50,7 @@ def upgrade() -> None:
         ),  # TODO - precisa mesmo dessa coluna
         sa.Column(
             "user_name", sa.VARCHAR(length=50), nullable=False
-        ),  #TODO relacionar user_id a tabela user se for relacionar com nome usa uniq
+        ),  # TODO relacionar user_id a tabela user se for relacionar com nome usa uniq
         sa.Column("start_time", sa.TIMESTAMP(), nullable=False),
         sa.Column("end_time", sa.TIMESTAMP(), nullable=False),
         sa.Column(

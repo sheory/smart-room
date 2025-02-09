@@ -19,9 +19,7 @@ async def test_get_rooms():
         Room(id=2, name="Room 2", capacity=15, location="Andar 2"),
     ]
 
-    mock_db.query().offset().limit().all.return_value = (
-        mock_rooms
-    )
+    mock_db.query().offset().limit().all.return_value = mock_rooms
 
     limit = 2
     offset = 0
@@ -57,9 +55,7 @@ async def test_get_reservations():
         ),
     ]
 
-    mock_db.query().join().offset().limit.return_value = (
-        mock_reservations
-    )
+    mock_db.query().join().offset().limit.return_value = mock_reservations
 
     room_id = 1
     limit = 2
