@@ -1,4 +1,7 @@
 #!/bin/sh
+set -e
+
+export $(grep -v '^#' .env | xargs)
 
 echo "Waiting for the database to be ready..."
 while ! nc -z db 5432; do
