@@ -1,4 +1,4 @@
-name: FastAPI CI/CD Pipeline
+name: SmartRoom CI/CD Pipeline
 
 on:
   push:
@@ -35,3 +35,15 @@ jobs:
     - name: Run tests with coverage
       run: |
         pytest --cov=app --cov-fail-under=95 tests/
+
+    - name: Run Black (code formatting)
+      run: |
+        black --check app/ tests/
+
+    - name: Run isort (import sorting)
+      run: |
+        isort --check-only app/ tests/
+
+    - name: Run Flake8 (linting)
+      run: |
+        flake8 app/ tests/
