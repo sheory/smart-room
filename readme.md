@@ -13,7 +13,7 @@
     - [Setup with Docker Compose](#setup-with-docker-compose)
 4. [API Documentation](#🢚-api-documentation)
 5. [Running Tests](#running-tests)
-6. [CI/CD with GitHub Actions](#🢚-ci-cd-with-github-actions)
+6. [CI with GitHub Actions](#🢚-ci-with-github-actions)
 7. [Architecture and Database](#🢚-architecture-and-database)
     - [Architecture: Monolithic](#architecture-monolithic)
     - [Database: PostgreSQL](#database-postgresql)
@@ -119,9 +119,9 @@ To run the tests, use the following command:
 docker-compose exec fastapi_app pytest
 ```
 
-## 🢚 CI/CD with GitHub Actions
+## 🢚 CI with GitHub Actions
 
-This project is integrated with **GitHub Actions** for continuous integration and deployment. The pipeline executes the following steps:
+This project is integrated with **GitHub Actions** for continuous integration. The pipeline executes the following steps:
 
 - Installs dependencies.
 - Runs unit tests with 95% coverage.
