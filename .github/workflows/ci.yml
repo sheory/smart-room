@@ -28,8 +28,19 @@ jobs:
     - name: Debug environment variables
       run: docker exec fastapi_app env
 
+    - name: Wait for PostgreSQL
+      run: |
+        echo "Waiting for PostgreSQL to be ready..."
+        until docker exec fastapi_app pg_isready -h db -p 5432 -U your_db_user; do
+          sleep 2
+        done
+
     - name: Run migrations
       run: docker exec fastapi_app alembic upgrade head
+
+    - name: Check database logs
+      if: failure()
+      run: docker logs db
 
     - name: Run tests with coverage
       run: |
