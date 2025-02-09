@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from fastapi import HTTPException
 
-from app.core.security import hash_password, verify_password
+from app.core.security import hash_password
 from app.models.user import User
 from app.schemas.user import UserCreate
 from app.services.auth_service import login_user, register_user
@@ -13,7 +13,7 @@ def test_register_user_success():
     user_data = UserCreate(username="test_user", password="securepassword")
     mock_db = MagicMock()
     mock_db.query.return_value.filter.return_value.first.return_value = (
-        None  # Simula que o usuário não existe
+        None
     )
     mock_db.add = MagicMock()
     mock_db.commit = MagicMock()

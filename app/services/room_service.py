@@ -39,7 +39,8 @@ async def get_rooms(
         rooms.append(room.__dict__)
 
     logger.info(
-        f"Got {len(rooms)} rooms successfully with pagination: limit={limit}, offset={offset}."
+        f"Got {len(rooms)} rooms successfully with pagination:"
+        f"limit={limit}, offset={offset}."
     )
 
     return RoomGetAllResponse(rooms=rooms)
