@@ -31,9 +31,10 @@ jobs:
     - name: Wait for PostgreSQL
       run: |
         echo "Waiting for PostgreSQL to be ready..."
-        until docker exec fastapi_app pg_isready -h db -p 5432 -U your_db_user; do
+        until docker exec db psql -h db -U your_db_user -d your_db_name -c "SELECT 1"; do
           sleep 2
         done
+
 
     - name: Run migrations
       run: docker exec fastapi_app alembic upgrade head
