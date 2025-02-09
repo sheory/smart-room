@@ -25,16 +25,12 @@ jobs:
     - name: Start containers
       run: docker compose -f "docker-compose.yml" up -d --build
 
-    - name: Debug environment variables
-      run: docker exec fastapi_app env
-
-    - name: Wait for PostgreSQL
+    - name: Wait for PostgreSQL to be ready
       run: |
         echo "Waiting for PostgreSQL to be ready..."
-        until docker exec db psql -h db -U your_db_user -d your_db_name -c "SELECT 1"; do
+        until docker exec db pg_isready -U your_db_user -d your_db_name; do
           sleep 2
         done
-
 
     - name: Run migrations
       run: docker exec fastapi_app alembic upgrade head
