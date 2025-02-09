@@ -73,6 +73,24 @@ async def test_cancel_room_reservation(client, mock_db, monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_cancel_room_reservation_error(client, mock_db, monkeypatch):
+    async def mock_cancel_reservation(reservation_id, db):
+        raise Exception("Test error")
+
+    monkeypatch.setattr(
+        "app.api.reservations.cancel_reservation", mock_cancel_reservation
+    )
+
+    reservation_id = 1
+    response = client.delete(f"/reservations/{reservation_id}")
+
+    assert response.status_code == 500
+    data = response.json()
+    assert "detail" in data
+    assert "Error cancelling reservation" in data["detail"]
+
+
+@pytest.mark.asyncio
 async def test_make_room_reservation_invalid(client, mock_db, monkeypatch):
     def mock_is_reservation_valid(reservation_data, db):
         return False
@@ -100,7 +118,6 @@ async def test_make_room_reservation_invalid(client, mock_db, monkeypatch):
 
     response = client.post("/reservations/", json=reservation_data)
 
-    # Verificando se a reserva foi invalidada corretamente
     assert response.status_code == 400
     data = response.json()
     assert data["detail"] == "Not a valid reservation"

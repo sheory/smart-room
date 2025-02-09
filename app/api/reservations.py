@@ -48,7 +48,7 @@ async def cancel_room_reservation(
 ) -> dict:
     try:
         return await cancel_reservation(reservation_id, db)
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=constants.ERROR_CANCELLING_RESERVATION,

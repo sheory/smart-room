@@ -19,7 +19,11 @@ def client():
 
 
 @pytest.mark.asyncio
-async def test_create_room(client, mock_db, monkeypatch):
+async def test_given_room_data_when_create_room_then_return_room(
+    client,
+    mock_db,
+    monkeypatch
+):
     async def mock_create_room(room_data, db):
         return {
             "id": 1,
@@ -40,7 +44,87 @@ async def test_create_room(client, mock_db, monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_get_rooms(client, mock_db, monkeypatch):
+async def test_given_room_data_when_create_room_then_raise_exception(
+    client,
+    mock_db,
+    monkeypatch
+):
+    async def mock_create_room(room_data, db):
+        raise Exception("Database Error")
+
+    monkeypatch.setattr("app.api.rooms.create_room", mock_create_room)
+
+    room_data = {"name": "Room 1", "capacity": 10, "location": "Andar 1"}
+    response = client.post("/rooms/", json=room_data)
+
+    assert response.status_code == 500
+    data = response.json()
+    assert data["detail"] == "Internal Server Error"
+
+
+@pytest.mark.asyncio
+async def test_given_db_error_when_get_rooms_then_return_internal_server_error(
+    client,
+    mock_db,
+    monkeypatch
+):
+    async def mock_get_rooms(limit, offset, db):
+        raise Exception("Database Error")
+
+    monkeypatch.setattr("app.api.rooms.get_rooms", mock_get_rooms)
+
+    response = client.get("/rooms/?limit=1&offset=0")
+
+    assert response.status_code == 500
+    data = response.json()
+    assert data["detail"] == "Internal Server Error"
+
+
+@pytest.mark.asyncio
+async def test_given_db_error_when_get_room_reservations_then_return_internal_error(
+    client,
+    mock_db,
+    monkeypatch
+):
+    async def mock_get_reservations(limit, offset, room_id, db):
+        raise Exception("Database Error")
+
+    monkeypatch.setattr("app.api.rooms.get_reservations", mock_get_reservations)
+
+    response = client.get("/rooms/1/reservations?limit=1&offset=0")
+
+    assert response.status_code == 500
+    data = response.json()
+    assert data["detail"] == "Internal Server Error"
+
+
+@pytest.mark.asyncio
+async def test_given_db_error_when_check_room_availability_then_return_internal_error(
+    client,
+    mock_db,
+    monkeypatch
+):
+    async def mock_check_availability(params, db):
+        raise Exception("Database Error")
+
+    monkeypatch.setattr("app.api.rooms.check_availability", mock_check_availability)
+
+    response = client.get(
+        "/rooms/1/availability?start_time=2025-02-01T10:00:00&"
+        "end_time=2025-02-01T12:00:00"
+    )
+
+    assert response.status_code == 500
+    data = response.json()
+    assert data["detail"] == "Internal Server Error"
+
+
+@pytest.mark.asyncio
+async def test_given_valid_request_when_get_rooms_then_return_rooms_list(
+    client,
+    mock_db,
+    monkeypatch
+):
     async def mock_get_rooms(limit, offset, db):
         return {
             "rooms": [
@@ -60,7 +144,11 @@ async def test_get_rooms(client, mock_db, monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_get_room_reservations(client, mock_db, monkeypatch):
+async def test_given_valid_request_when_get_room_reservations_then_return_reservations(
+    client,
+    mock_db,
+    monkeypatch
+):
     async def mock_get_reservations(limit, offset, room_id, db):
         print(f"Mock called with room_id={room_id}, limit={limit}, offset={offset}")
         return {
@@ -86,7 +174,11 @@ async def test_get_room_reservations(client, mock_db, monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_check_room_availability(client, mock_db, monkeypatch):
+async def test_given_valid_request_when_check_room_availabilit_then_return_availabilit(
+    client,
+    mock_db,
+    monkeypatch
+):
     async def mock_check_availability(params, db):
         return True
 

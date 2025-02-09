@@ -1,5 +1,4 @@
 from fastapi import Depends, HTTPException, status
-from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
 
 from app.core import constants
@@ -14,12 +13,21 @@ from app.schemas.rooms import (
     RoomCreateResponse,
     RoomGetAllResponse,
 )
+from app.services.reservation_service import room_already_reserved_query
 
 
 async def create_room(
     room_data: RoomCreateRequest, db: Session = Depends(get_db)
 ) -> RoomCreateResponse:
     try:
+        if room_data.capacity < 1:
+            logger.error(
+                constants.ERROR_CREATING_ROOM_CAPACITY,
+            )
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=constants.ERROR_CREATING_ROOM_CAPACITY,
+            )
         new_room = RoomModel(**room_data.model_dump())
 
         db.add(new_room)
@@ -30,6 +38,8 @@ async def create_room(
 
         return RoomCreateResponse(**new_room.__dict__)
     except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
         logger.error(f"{constants.ERROR_CREATING_ROOM}: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -54,6 +64,8 @@ async def get_rooms(
 
         return RoomGetAllResponse(rooms=rooms)
     except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
         logger.error(f"{constants.ERROR_GETTING_ROOMS}: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -79,6 +91,8 @@ async def get_reservations(
         logger.info(f"Got all reservations for room {room_id} successfully.")
         return ReservationGetAllResponse(reservations=reservations)
     except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
         logger.error(
             f"{constants.ERROR_GETTING_RESERVATIONS} for room {room_id}: {str(e)}"
         )
@@ -92,23 +106,11 @@ async def check_availability(
     params: RoomCheckAvailabilityRequest, db: Session = Depends(get_db)
 ) -> bool:
     try:
-        any_room: RoomModel = (
-            db.query(RoomModel)
-            .join(Reservation, Reservation.room_id == RoomModel.id)
-            .filter(  # TODO - check and generalize this filter
-                or_(
-                    and_(
-                        Reservation.start_time < params.end_time,
-                        Reservation.end_time > params.start_time,
-                    ),
-                    or_(
-                        Reservation.start_time == params.start_time,
-                        Reservation.end_time == params.end_time,
-                    ),
-                ),
-                RoomModel.id == params.id,
-            )
-            .first()
+        any_room: RoomModel = room_already_reserved_query(
+            params.start_time,
+            params.end_time,
+            params.id,
+            db,
         )
 
         if any_room:
@@ -118,6 +120,8 @@ async def check_availability(
         logger.info(f"Room {params.id} available.")
         return True
     except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
         logger.error(f"{constants.ERROR_CHECKING_ROOM} {params.id}: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

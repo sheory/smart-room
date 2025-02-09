@@ -29,9 +29,9 @@ async def create(
     try:
         response = await create_room(room_data, db)
         return response
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
     except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=constants.INTERNAL_SERVER_ERROR,
@@ -47,9 +47,9 @@ async def get_all(
     try:
         response = await get_rooms(db=db, limit=limit, offset=offset)
         return response
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
     except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=constants.INTERNAL_SERVER_ERROR,
@@ -72,9 +72,9 @@ async def get_room_reservations(
             limit=limit, offset=offset, room_id=room_id, db=db
         )
         return response
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
     except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=constants.INTERNAL_SERVER_ERROR,
@@ -96,9 +96,9 @@ async def check_room_availability(
 
         availability = "available" if is_available else "unavailable"
         return {"message": f"Room is {availability}"}
-    except HTTPException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
     except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=constants.INTERNAL_SERVER_ERROR,

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict, Union
 
 from fastapi import Depends, HTTPException, status
@@ -19,9 +20,13 @@ def is_reservation_valid(
     reservation_data: RerservationCreateRequest, db: Session = Depends(get_db)
 ) -> bool:
     try:
-        if not reservation_data.start_time < reservation_data.end_time:
+        if reservation_data.start_time >= reservation_data.end_time:
             logger.error(constants.INVALID_DATETIME)
             raise HTTPException(status_code=400, detail=constants.INVALID_DATETIME)
+
+        if reservation_data.start_time <= datetime.now():
+            logger.error(constants.INVALID_DATETIME_NOW)
+            raise HTTPException(status_code=400, detail=constants.INVALID_DATETIME_NOW)
 
         room = db.get(Room, reservation_data.room_id)
         if not room:
@@ -32,16 +37,11 @@ def is_reservation_valid(
             logger.error(constants.ROOM_CAPACITY_FULL)
             raise HTTPException(status_code=400, detail=constants.ROOM_CAPACITY_FULL)
 
-        already_reserved = (
-            db.query(ReservationModel)
-            .filter(
-                and_(
-                    reservation_data.start_time < ReservationModel.end_time,
-                    reservation_data.end_time > ReservationModel.start_time,
-                ),
-                ReservationModel.room_id == reservation_data.room_id,
-            )
-            .first()
+        already_reserved = room_already_reserved_query(
+            reservation_data.start_time,
+            reservation_data.end_time,
+            reservation_data.room_id,
+            db,
         )
 
         if already_reserved:
@@ -117,3 +117,22 @@ async def cancel_reservation(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=constants.ERROR_CANCELLING_RESERVATION,
         )
+
+
+def room_already_reserved_query(
+    start_time: datetime,
+    end_time: datetime,
+    room_id: int,
+    db: Session = Depends(get_db),
+):
+    return (
+        db.query(ReservationModel)
+        .filter(
+            and_(
+                start_time < ReservationModel.end_time,
+                end_time > ReservationModel.start_time,
+            ),
+            ReservationModel.room_id == room_id,
+        )
+        .first()
+    )

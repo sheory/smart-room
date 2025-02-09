@@ -1,15 +1,13 @@
 from unittest.mock import MagicMock, patch
-
 import pytest
 from fastapi import HTTPException
-
 from app.core.security import hash_password
 from app.models.user import User
 from app.schemas.user import UserCreate
 from app.services.auth_service import login_user, register_user
 
 
-def test_register_user_success():
+def test_given_valid_data_when_register_user_then_create_and_return_token():
     user_data = UserCreate(username="test_user", password="securepassword")
     mock_db = MagicMock()
     mock_db.query.return_value.filter.return_value.first.return_value = None
@@ -30,7 +28,7 @@ def test_register_user_success():
     mock_db.refresh.assert_called_once()
 
 
-def test_register_user_already_exists():
+def test_given_existing_user_when_register_user_then_return_error():
     user_data = UserCreate(username="test_user", password="securepassword")
     mock_db = MagicMock()
     mock_db.query.return_value.filter.return_value.first.return_value = User(
@@ -44,7 +42,7 @@ def test_register_user_already_exists():
     assert "User already exists" in exc_info.value.detail
 
 
-def test_login_user_success():
+def test_given_valid_data_when_login_user_then_return_token():
     user_data = UserCreate(username="test_user", password="securepassword")
     mock_db = MagicMock()
     hashed_password = hash_password(user_data.password)
@@ -63,7 +61,7 @@ def test_login_user_success():
     assert response == mock_token
 
 
-def test_login_user_invalid_credentials():
+def test_given_invalid_credentials_when_login_user_then_return_error():
     user_data = UserCreate(username="test_user", password="wrongpassword")
     mock_db = MagicMock()
     hashed_password = hash_password("securepassword")
