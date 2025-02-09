@@ -20,9 +20,7 @@ def client():
 
 @pytest.mark.asyncio
 async def test_given_room_data_when_create_room_then_return_room(
-    client,
-    mock_db,
-    monkeypatch
+    client, mock_db, monkeypatch
 ):
     async def mock_create_room(room_data, db):
         return {
@@ -45,9 +43,7 @@ async def test_given_room_data_when_create_room_then_return_room(
 
 @pytest.mark.asyncio
 async def test_given_room_data_when_create_room_then_raise_exception(
-    client,
-    mock_db,
-    monkeypatch
+    client, mock_db, monkeypatch
 ):
     async def mock_create_room(room_data, db):
         raise Exception("Database Error")
@@ -64,9 +60,7 @@ async def test_given_room_data_when_create_room_then_raise_exception(
 
 @pytest.mark.asyncio
 async def test_given_db_error_when_get_rooms_then_return_internal_server_error(
-    client,
-    mock_db,
-    monkeypatch
+    client, mock_db, monkeypatch
 ):
     async def mock_get_rooms(limit, offset, db):
         raise Exception("Database Error")
@@ -82,9 +76,7 @@ async def test_given_db_error_when_get_rooms_then_return_internal_server_error(
 
 @pytest.mark.asyncio
 async def test_given_db_error_when_get_room_reservations_then_return_internal_error(
-    client,
-    mock_db,
-    monkeypatch
+    client, mock_db, monkeypatch
 ):
     async def mock_get_reservations(limit, offset, room_id, db):
         raise Exception("Database Error")
@@ -100,9 +92,7 @@ async def test_given_db_error_when_get_room_reservations_then_return_internal_er
 
 @pytest.mark.asyncio
 async def test_given_db_error_when_check_room_availability_then_return_internal_error(
-    client,
-    mock_db,
-    monkeypatch
+    client, mock_db, monkeypatch
 ):
     async def mock_check_availability(params, db):
         raise Exception("Database Error")
@@ -121,9 +111,7 @@ async def test_given_db_error_when_check_room_availability_then_return_internal_
 
 @pytest.mark.asyncio
 async def test_given_valid_request_when_get_rooms_then_return_rooms_list(
-    client,
-    mock_db,
-    monkeypatch
+    client, mock_db, monkeypatch
 ):
     async def mock_get_rooms(limit, offset, db):
         return {
@@ -145,9 +133,7 @@ async def test_given_valid_request_when_get_rooms_then_return_rooms_list(
 
 @pytest.mark.asyncio
 async def test_given_valid_request_when_get_room_reservations_then_return_reservations(
-    client,
-    mock_db,
-    monkeypatch
+    client, mock_db, monkeypatch
 ):
     async def mock_get_reservations(limit, offset, room_id, db):
         print(f"Mock called with room_id={room_id}, limit={limit}, offset={offset}")
@@ -175,9 +161,7 @@ async def test_given_valid_request_when_get_room_reservations_then_return_reserv
 
 @pytest.mark.asyncio
 async def test_given_valid_request_when_check_room_availabilit_then_return_availabilit(
-    client,
-    mock_db,
-    monkeypatch
+    client, mock_db, monkeypatch
 ):
     async def mock_check_availability(params, db):
         return True

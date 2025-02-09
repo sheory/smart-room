@@ -19,9 +19,7 @@ def client():
 
 
 def test_given_user_data_when_register_user_then_return_access_token(
-    client,
-    mock_db,
-    monkeypatch
+    client, mock_db, monkeypatch
 ):
     def mock_register_user(user_data, db):
         return "mocked_token"
